@@ -57,7 +57,12 @@ def home():
 @app.route('/about')
 def about():
     if 'user' in session:
-        return render_template('about.html')
+        cursor = mysql.connection.cursor()
+        email = session['user']
+        cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
+        user = cursor.fetchone()
+        cursor.close()
+        return render_template('about.html', user = user)
     else:
         return redirect(url_for('show_login'))
 
