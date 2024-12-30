@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %} Product Management {% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories = True) %}
+{% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Product Management</h1>
+    <div class="mb-3 text-end">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+    </div>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Product ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td> {{ product[0] }}</td>
+                <td> {{ product[1] }}</td>
+                <td> {{ product[2] }}</td>
+                <td> {{ product[3] }}</td>
+                <td> {{ product[4] }}</td>
+                <td> {{ product[5] }}</td>
+                <td> {{ product[6] }}</td>
+                <td>
+                    <button class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#editProductModal">Edit</button>
+                    <form action="/delete" method="POST">
+                    <input type="hidden" name="deleteProductId" id="deleteProductId" value="{{ product[0] }}">
+                    <input type="hidden" name="deleteProductName" id="deleteProductName" value="{{ product[1] }}">
+                    <button class="btn btn-danger w-100" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" id="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" class="form-control" name="price" id="price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" name="stock" id="stock">
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <input type="text" class="form-control" name="category" id="category">
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" name="status" id="status">
+                            <option value="Available">Available</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                            <option value="Low Stock">Low Stock</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PRODUCT MODAL -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/save" method="POST">
+                    <div class="mb-3">
+                        <label for="editProductId" class="form-label">Product ID</label>
+                        <input type="text" class="form-control" name="editProductId" id="editProductId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="editName" id="editName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" name="editDescription" id="editDescription"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" name="editPrice" id="editPrice">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" name="editStock" id="editStock">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategory" class="form-label">Category</label>
+                        <input type="text" class="form-control" name="editCategory" id="editCategory">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">Status</label>
+                        <select class="form-select" name="editStatus" id="editStatus">
+                            <option value="Available">Available</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                            <option value="Low Stock">Low Stock</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const editButtons = document.querySelectorAll('.btn-warning');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            const row = event.target.closest('tr');
+            
+            const productId = row.children[0].textContent.trim();
+            const name = row.children[1].textContent.trim();
+            const description = row.children[2].textContent.trim();
+            const price = row.children[3].textContent.trim();
+            const stock = row.children[4].textContent.trim();
+            const category = row.children[5].textContent.trim();
+            const status = row.children[6].textContent.trim();
+
+            document.getElementById('editProductId').value = productId
+            document.getElementById('editName').value = name;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editPrice').value = price;
+            document.getElementById('editStock').value = stock;
+            document.getElementById('editCategory').value = category;
+            document.getElementById('editStatus').value = status;
+        });
+    });
+
+    const deleteButtons = document.querySelectorAll('.btn-danger');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent the default action
+            
+            const row = event.target.closest('tr');
+            
+            const productId = row.children[0].textContent.trim();
+            const name = row.children[1].textContent.trim();
+
+            Swal.fire({
+                title: 'Delete ' + name + ' (Product ID: ' + productId + ')?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const deleteForm = button.closest('form');
+                    if (deleteForm) deleteForm.submit();
+                }
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}
